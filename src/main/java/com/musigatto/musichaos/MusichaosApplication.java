@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MusichaosApplication {
 
 	public static void main(String[] args) {
-		System.out.printf("hello");
 		SpringApplication.run(MusichaosApplication.class, args);
 	}
 
