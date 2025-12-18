@@ -12,37 +12,41 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthIntegrationTest {
+class AuthIntegrationTest {
 
     @LocalServerPort
     private int port;
 
     @Autowired
     private UserRepository userRepository;
-    private ObjectMapper objectMapper;
 
     private WebTestClient webClient;
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup() {
+        userRepository.deleteAll();
+        objectMapper = new ObjectMapper();
+
         webClient = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
                 .build();
-        objectMapper = new ObjectMapper();
-        userRepository.deleteAll();
     }
 
     @Test
     void registerLoginAndGetProfile() throws Exception {
-        // --- 1️⃣ Registro ---
+
+        // --- 1️⃣ Register ---
         String registerJson = """
-                {
-                  "email": "test@example.com",
-                  "username": "tester",
-                  "password": "1234"
-                }
-                """;
+            {
+              "email": "test@example.com",
+              "username": "tester",
+              "password": "1234"
+            }
+            """;
 
         webClient.post()
                 .uri("/api/auth/register")
@@ -50,17 +54,18 @@ public class AuthIntegrationTest {
                 .bodyValue(registerJson)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("User registered");
+                .expectBody(String.class)
+                .isEqualTo("User registered");
 
         // --- 2️⃣ Login ---
         String loginJson = """
-                {
-                  "email": "test@example.com",
-                  "password": "1234"
-                }
-                """;
+            {
+              "email": "test@example.com",
+              "password": "1234"
+            }
+            """;
 
-        String token = webClient.post()
+        String responseBody = webClient.post()
                 .uri("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(loginJson)
@@ -70,11 +75,15 @@ public class AuthIntegrationTest {
                 .returnResult()
                 .getResponseBody();
 
-        // Parseamos token desde JSON
-        JsonNode jsonNode = objectMapper.readTree(token);
-        String jwtToken = jsonNode.get("token").asText();
+        assertNotNull(responseBody);
 
-        // --- 3️⃣ Obtener perfil ---
+        JsonNode json = objectMapper.readTree(responseBody);
+        String jwtToken = json.get("token").asText();
+
+        assertNotNull(jwtToken);
+        assertFalse(jwtToken.isBlank());
+
+        // --- 3️⃣ Get profile ---
         webClient.get()
                 .uri("/api/me")
                 .header("Authorization", "Bearer " + jwtToken)
@@ -83,9 +92,9 @@ public class AuthIntegrationTest {
                 .expectBody(UserProfile.class)
                 .consumeWith(response -> {
                     UserProfile profile = response.getResponseBody();
-                    assert profile != null;
-                    assert profile.getEmail().equals("test@example.com");
-                    assert profile.getUsername().equals("tester");
+                    assertNotNull(profile);
+                    assertEquals("test@example.com", profile.getEmail());
+                    assertEquals("tester", profile.getUsername());
                 });
     }
 }
