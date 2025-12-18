@@ -1,5 +1,9 @@
 package com.musigatto.musichaos.game;
 
+import com.musigatto.musichaos.model.Lobby;
+import com.musigatto.musichaos.model.Round;
+import com.musigatto.musichaos.model.RoundStatus;
+import com.musigatto.musichaos.repository.LobbyRepository;
 import com.musigatto.musichaos.repository.RoundRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +15,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Test de integración para el flujo completo de una ronda
- */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RoundIntegrationTest {
 
@@ -23,28 +24,38 @@ class RoundIntegrationTest {
     @Autowired
     private RoundRepository roundRepository;
 
+    @Autowired
+    private LobbyRepository lobbyRepository;
+
     private WebTestClient webClient;
+    private Long lobbyId;
 
     @BeforeEach
     void setup() {
-        // Cliente HTTP para llamar a la app real
+        roundRepository.deleteAll();
+        lobbyRepository.deleteAll();
+
+        Lobby lobby = new Lobby();
+        lobby.setCode("TEST");
+        lobby.setName("Test Lobby");
+        lobby.setStarted(false);
+
+        lobbyId = lobbyRepository.save(lobby).getId();
+
         webClient = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
                 .build();
-
-        // Limpiamos la DB antes de cada test
-        roundRepository.deleteAll();
     }
 
     @Test
-    void createStartAndFinishRound() {
-        // --- 1️⃣ Crear ronda ---
-        Round createdRound = webClient.post()
+    void fullRoundFlow() {
+        // Crear ronda
+        Round round = webClient.post()
                 .uri(uriBuilder ->
-                        uriBuilder
-                                .path("/api/rounds")
-                                .queryParam("number", 1)
-                                .queryParam("answer", "queen")
+                        uriBuilder.path("/api/rounds")
+                                .queryParam("lobbyId", lobbyId)
+                                .queryParam("roundNumber", 1)
+                                .queryParam("correctAnswer", "queen")
                                 .build()
                 )
                 .accept(MediaType.APPLICATION_JSON)
@@ -54,24 +65,29 @@ class RoundIntegrationTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(createdRound).isNotNull();
-        assertThat(createdRound.getStatus()).isEqualTo(RoundStatus.WAITING);
+        assertThat(round).isNotNull();
+        assertThat(round.getStatus()).isEqualTo(RoundStatus.WAITING);
+        Long roundId = round.getId();
 
-        Long roundId = createdRound.getId();
-
-        // --- 2️⃣ Iniciar ronda ---
-        Round startedRound = webClient.post()
-                .uri("/api/rounds/{id}/start", roundId)
+        // Enviar respuesta jugador
+        Round updatedRound = webClient.post()
+                .uri(uriBuilder ->
+                        uriBuilder.path("/api/rounds/{id}/answer")
+                                .queryParam("username", "player1")
+                                .queryParam("answer", "queen")
+                                .build(roundId)
+                )
+                .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(Round.class)
                 .returnResult()
                 .getResponseBody();
 
-        assertThat(startedRound).isNotNull();
-        assertThat(startedRound.getStatus()).isEqualTo(RoundStatus.ACTIVE);
+        assertThat(updatedRound).isNotNull();
+        assertThat(updatedRound.getId()).isEqualTo(roundId);
 
-        // --- 3️⃣ Finalizar ronda ---
+        // Finalizar ronda
         Round finishedRound = webClient.post()
                 .uri("/api/rounds/{id}/finish", roundId)
                 .exchange()

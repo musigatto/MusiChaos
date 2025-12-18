@@ -1,8 +1,8 @@
 package com.musigatto.musichaos.service;
 
 import com.musigatto.musichaos.game.PlayerAnswer;
-import com.musigatto.musichaos.game.Round;
-import com.musigatto.musichaos.game.RoundStatus;
+import com.musigatto.musichaos.model.Round;
+import com.musigatto.musichaos.model.RoundStatus;
 import com.musigatto.musichaos.repository.PlayerAnswerRepository;
 import com.musigatto.musichaos.repository.RoundRepository;
 import org.springframework.stereotype.Service;

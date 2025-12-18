@@ -1,4 +1,4 @@
-package com.musigatto.musichaos.game;
+package com.musigatto.musichaos.model;
 
 /**
  * Estados posibles de una ronda

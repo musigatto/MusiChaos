@@ -1,6 +1,6 @@
 package com.musigatto.musichaos.repository;
 
-import com.musigatto.musichaos.game.Round;
+import com.musigatto.musichaos.model.Round;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

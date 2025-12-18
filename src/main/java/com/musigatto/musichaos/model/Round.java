@@ -1,8 +1,11 @@
-package com.musigatto.musichaos.game;
+package com.musigatto.musichaos.model;
 
-import com.musigatto.musichaos.model.Lobby;
+import com.musigatto.musichaos.game.PlayerAnswer;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "rounds")
@@ -27,4 +30,7 @@ public class Round {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lobby_id")
     private Lobby lobby;
+
+    @OneToMany(mappedBy = "round", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PlayerAnswer> answers = new HashSet<>();
 }

@@ -2,9 +2,9 @@ package com.musigatto.musichaos.service;
 
 import com.musigatto.musichaos.game.LobbyMessage;
 import com.musigatto.musichaos.game.LobbyNotificationService;
-import com.musigatto.musichaos.game.Round;
-import com.musigatto.musichaos.game.RoundStatus;
 import com.musigatto.musichaos.model.Lobby;
+import com.musigatto.musichaos.model.Round;
+import com.musigatto.musichaos.model.RoundStatus;
 import com.musigatto.musichaos.repository.LobbyRepository;
 import com.musigatto.musichaos.repository.RoundRepository;
 import org.springframework.stereotype.Service;

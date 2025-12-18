@@ -1,6 +1,6 @@
 package com.musigatto.musichaos.controller;
 
-import com.musigatto.musichaos.game.Round;
+import com.musigatto.musichaos.model.Round;
 import com.musigatto.musichaos.service.RoundService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

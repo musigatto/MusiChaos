@@ -1,5 +1,6 @@
 package com.musigatto.musichaos.game;
 
+import com.musigatto.musichaos.model.Round;
 import jakarta.persistence.*;
 import lombok.*;
 
