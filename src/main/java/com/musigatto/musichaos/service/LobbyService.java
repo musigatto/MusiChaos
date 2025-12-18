@@ -7,7 +7,7 @@ import com.musigatto.musichaos.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,29 +16,50 @@ public class LobbyService {
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
 
-    public Lobby createLobby(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow();
+    // Crear un lobby nuevo
+    public Lobby createLobby(String name) {
+        String code = generateUniqueCode();
         Lobby lobby = Lobby.builder()
-                .code(generateCode())
+                .name(name)
+                .code(code)
+                .started(false) // reemplaza .active(false)
                 .build();
-        lobby.getPlayers().add(user);
         return lobbyRepository.save(lobby);
     }
 
-    public Lobby joinLobby(String code, String email) {
+    // Agregar jugador al lobby
+    public Lobby joinLobby(String code, String emailOrUsername) {
         Lobby lobby = lobbyRepository.findByCode(code)
                 .orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
-        User user = userRepository.findByEmail(email).orElseThrow();
+        User user = userRepository.findByEmail(emailOrUsername)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         lobby.getPlayers().add(user);
         return lobbyRepository.save(lobby);
     }
 
-    private String generateCode() {
-        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-        Random r = new Random();
-        return "" + chars.charAt(r.nextInt(chars.length()))
-                + chars.charAt(r.nextInt(chars.length()))
-                + chars.charAt(r.nextInt(chars.length()))
-                + chars.charAt(r.nextInt(chars.length()));
+
+    // Iniciar lobby
+    public Lobby startLobby(String code) {
+        Lobby lobby = lobbyRepository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("Lobby not found"));
+        lobby.start(); // reemplaza setActive(true)
+        return lobbyRepository.save(lobby);
+    }
+
+    // Finalizar lobby
+    public Lobby finishLobby(String code) {
+        Lobby lobby = lobbyRepository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("Lobby not found"));
+        lobby.finish(); // reemplaza setActive(false)
+        return lobbyRepository.save(lobby);
+    }
+
+    // Genera un código único tipo "ABCD"
+    private String generateUniqueCode() {
+        String code;
+        do {
+            code = UUID.randomUUID().toString().substring(0, 4).toUpperCase();
+        } while (lobbyRepository.findByCode(code).isPresent());
+        return code;
     }
 }
