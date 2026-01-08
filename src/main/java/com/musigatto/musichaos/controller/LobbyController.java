@@ -33,7 +33,7 @@ public class LobbyController {
     static class JoinRequest {
         private String code;
     }
-    @GetMapping("/lobbies/{lobbyId}/scores") // sin /api delante
+    @GetMapping("/{lobbyId}/scores") // sin /api delante
     public List<Score> getLobbyScores(@PathVariable Long lobbyId) {
         return scoreService.getScoresByLobby(lobbyId)
                 .stream()

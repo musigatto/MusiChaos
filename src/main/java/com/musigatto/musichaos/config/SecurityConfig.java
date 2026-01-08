@@ -20,13 +20,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // desactivar CSRF para fetch desde HTML
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/test.html",           // HTML de prueba
-                                "/api/rounds/**",       // crear ronda, enviar respuesta, finalizar
-                                "/api/lobbies/**",      // puntajes, lobby
-                                "/ws/**"                // WebSocket STOMP
+                                "/api/auth/**",         // ← AÑADIR ESTO (register y login)
+                                "/api/rounds/**",       // crear ronda, enviar respuesta
+                                "/api/lobbies/**",      // puntajes
+                                "/ws/**"                // WebSocket
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -34,7 +35,6 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
