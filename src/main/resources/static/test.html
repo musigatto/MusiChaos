@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MusiChaos Lobby</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; }
+        input, button { padding: 0.5rem; margin: 0.5rem 0; }
+        #lobbyInfo { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+<h1>MusiChaos - Lobbies</h1>
+
+<section>
+    <h2>Crear Lobby</h2>
+    <button id="createLobbyBtn">Crear Lobby</button>
+</section>
+
+<section>
+    <h2>Unirse a Lobby</h2>
+    <input type="text" id="joinCode" placeholder="Código del lobby" />
+    <button id="joinLobbyBtn">Unirse</button>
+</section>
+
+<section id="lobbyInfo">
+    <h3>Información del Lobby</h3>
+    <div id="info"></div>
+</section>
+
+<script>
+    const infoDiv = document.getElementById('info');
+
+    // Crear lobby
+    document.getElementById('createLobbyBtn').addEventListener('click', () => {
+        fetch('/api/lobby/create', {
+            method: 'POST',
+            credentials: 'include'
+        })
+        .then(res => res.json())
+        .then(lobby => {
+            infoDiv.innerHTML = `
+                <strong>Lobby creado:</strong><br>
+                ID: ${lobby.id}<br>
+                Código: ${lobby.code}<br>
+                Nombre: ${lobby.name}<br>
+                Jugadores: ${lobby.players.length}<br>
+                Estado: ${lobby.started ? 'Iniciado' : 'No iniciado'}
+            `;
+        })
+        .catch(err => alert("Error creando lobby: " + err));
+    });
+
+    // Unirse a lobby
+    document.getElementById('joinLobbyBtn').addEventListener('click', () => {
+        const code = document.getElementById('joinCode').value.trim();
+        if (!code) return alert("Introduce un código válido");
+
+        fetch('/api/lobby/join', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ code })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Lobby no encontrado");
+            return res.json();
+        })
+        .then(lobby => {
+            infoDiv.innerHTML = `
+                <strong>Unido al lobby:</strong><br>
+                ID: ${lobby.id}<br>
+                Código: ${lobby.code}<br>
+                Nombre: ${lobby.name}<br>
+                Jugadores: ${lobby.players.length}<br>
+                Estado: ${lobby.started ? 'Iniciado' : 'No iniciado'}
+            `;
+        })
+        .catch(err => alert("Error uniéndose al lobby: " + err));
+    });
+</script>
+</body>
+</html>

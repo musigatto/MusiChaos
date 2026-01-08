@@ -20,17 +20,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // desactivar CSRF para fetch desde HTML
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/rounds/**").permitAll()
+                        .requestMatchers(
+                                "/test.html",           // HTML de prueba
+                                "/api/rounds/**",       // crear ronda, enviar respuesta, finalizar
+                                "/api/lobbies/**",      // puntajes, lobby
+                                "/ws/**"                // WebSocket STOMP
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
