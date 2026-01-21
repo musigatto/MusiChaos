@@ -20,6 +20,7 @@ public final class SecurityConstants {
 
             // HTML de prueba/desarrollo
             "/test.html",
+            "/login.html",
 
             // WebSocket (STOMP sobre SockJS)
             "/ws/**",

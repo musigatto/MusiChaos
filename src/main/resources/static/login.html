@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusiChaos - Music Quiz Game</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body>
+<!-- Indicador de estado WebSocket -->
+<div class="ws-status ws-disconnected" id="wsStatus">● Desconectado</div>
+
+<div class="container">
+    <h1>🎵 MusiChaos</h1>
+
+    <!-- Sección de Autenticación -->
+    <div id="authSection" class="card">
+        <h2>Autenticación</h2>
+        <div id="authMessage"></div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="authEmail" placeholder="tu@email.com">
+        </div>
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="authUsername" placeholder="Tu nombre de usuario">
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="authPassword" placeholder="Tu contraseña">
+        </div>
+
+        <button id="registerBtn">Registrarse</button>
+        <button id="loginBtn">Iniciar Sesión</button>
+    </div>
+
+    <!-- Sección de Lobby (oculta hasta login) -->
+    <div id="lobbySection" class="hidden">
+        <!-- Gestión de Lobbies -->
+        <div class="card">
+            <h2>Gestión de Lobbies</h2>
+            <button id="createLobbyBtn">🎮 Crear Nuevo Lobby</button>
+            <button id="logoutBtn" class="btn-danger">🚪 Cerrar Sesión</button>
+        </div>
+
+        <!-- Unirse a Lobby -->
+        <div class="card">
+            <h2>Unirse a Lobby</h2>
+            <div class="form-group">
+                <label>Código del Lobby</label>
+                <input type="text" id="joinCode" placeholder="Ej: ABCD1234">
+            </div>
+            <button id="joinLobbyBtn">👥 Unirse al Lobby</button>
+        </div>
+
+        <!-- Información del Lobby Actual -->
+        <div id="currentLobbyCard" class="card hidden">
+            <h2>Lobby Actual</h2>
+            <div id="lobbyInfo" class="lobby-info"></div>
+            <button id="loadScoresBtn" style="margin-top: 12px;">📊 Cargar Puntajes</button>
+            <button id="leaveLobbyBtn" class="btn-danger" style="margin-top: 12px;">❌ Salir del Lobby</button>
+        </div>
+
+        <!-- Panel de Control del Host -->
+        <div id="hostPanel" class="card hidden">
+            <div class="game-panel">
+                <h2>🎮 Control del Host</h2>
+
+                <div class="host-controls">
+                    <h3>Crear Nueva Ronda</h3>
+                    <div class="form-group">
+                        <label style="color: white;">Número de Ronda</label>
+                        <input type="number" id="hostRoundNumber" value="1" min="1" style="width: auto;">
+                    </div>
+                    <div class="form-group">
+                        <label style="color: white;">Respuesta Correcta</label>
+                        <input type="text" id="hostCorrectAnswer" placeholder="Ej: Bohemian Rhapsody">
+                    </div>
+                    <button id="createRoundBtn">🎯 Crear Ronda</button>
+
+                    <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.2);">
+
+                    <h3>Ronda Actual</h3>
+                    <div id="currentRoundInfo">
+                        <p style="color: rgba(255,255,255,0.7);">No hay ronda activa</p>
+                    </div>
+                    <button id="finishRoundBtn" disabled>✅ Finalizar Ronda</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de Juego para Jugadores -->
+        <div id="playerPanel" class="card hidden">
+            <div class="game-panel">
+                <h2>🎵 Ronda Activa</h2>
+
+                <div class="round-info">
+                    <h3 id="playerRoundTitle">Esperando ronda...</h3>
+                    <p id="playerRoundStatus" style="color: rgba(255,255,255,0.8);"></p>
+                </div>
+
+                <div class="answer-input">
+                    <input type="text" id="playerAnswer" placeholder="Escribe tu respuesta aquí...">
+                    <button id="submitAnswerBtn" disabled style="margin-top: 8px;">🎤 Enviar Respuesta</button>
+                </div>
+
+                <div id="answerFeedback"></div>
+            </div>
+        </div>
+
+        <!-- Panel de Respuestas en Tiempo Real -->
+        <div id="answersPanel" class="card hidden">
+            <div class="game-panel">
+                <h2>📝 Respuestas de Jugadores</h2>
+                <div class="answers-list" id="answersList">
+                    <p style="color: rgba(255,255,255,0.7);">Esperando respuestas...</p>
+                </div>
+                <button id="refreshAnswersBtn">🔄 Actualizar Respuestas</button>
+            </div>
+        </div>
+
+        <!-- Tabla de Puntajes -->
+        <div id="scoresCard" class="card hidden">
+            <h2>Tabla de Puntajes</h2>
+            <table class="scores-table" id="scoresTable">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Jugador</th>
+                    <th>Puntos</th>
+                </tr>
+                </thead>
+                <tbody id="scoresBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Log de Mensajes WebSocket -->
+        <div class="card">
+            <h2>Mensajes en Tiempo Real</h2>
+            <div class="message-log" id="messageLog">
+                <p>Esperando conexión WebSocket...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Librerías Externas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<!-- Aplicación MusiChaos -->
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/websocket.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/lobby.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
