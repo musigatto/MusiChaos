@@ -1,0 +1,15 @@
+﻿services:
+  postgres:
+    image: postgres:15.15
+    container_name: musichaos-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: musichaos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
