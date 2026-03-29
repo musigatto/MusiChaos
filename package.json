@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@stomp/stompjs": "^7.3.0",
+    "axios": "^1.14.0",
+    "react-router-dom": "^7.13.2",
+    "sockjs-client": "^1.6.1"
+  }
+}
