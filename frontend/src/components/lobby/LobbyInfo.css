@@ -1,0 +1,47 @@
+﻿.lobby-info {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.lobby-info p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.lobby-info strong {
+  color: #e74c3c;
+}
+
+.player-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+.player-list li {
+  background: white;
+  padding: 8px 12px;
+  margin: 4px 0;
+  border-radius: 4px;
+  border-left: 3px solid #e74c3c;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: #28a745;
+  color: white;
+}
+
+.badge-warning {
+  background: #ffc107;
+  color: #333;
+}

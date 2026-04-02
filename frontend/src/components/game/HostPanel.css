@@ -1,0 +1,50 @@
+﻿.game-panel {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.game-panel h2 {
+  color: white;
+  margin-bottom: 16px;
+}
+
+.game-panel h3 {
+  color: white;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.host-controls {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.host-controls button {
+  background: white;
+  color: #667eea;
+  margin: 4px;
+}
+
+.host-controls button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+.host-controls button:disabled {
+  background: #ccc;
+  color: #666;
+}
+
+.current-round-info {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  margin: 12px 0;
+}
+
+.current-round-info p {
+  margin: 6px 0;
+  color: rgba(255, 255, 255, 0.9);
+}

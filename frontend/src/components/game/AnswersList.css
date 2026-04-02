@@ -1,0 +1,27 @@
+﻿.answers-list {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.answer-item {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.answer-item.correct {
+  background: rgba(40, 167, 69, 0.3);
+  border-left: 4px solid #28a745;
+}
+
+.answer-item.incorrect {
+  background: rgba(220, 53, 69, 0.3);
+  border-left: 4px solid #dc3545;
+}

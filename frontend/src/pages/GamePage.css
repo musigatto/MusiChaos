@@ -1,0 +1,48 @@
+﻿.game-page {
+  min-height: 100vh;
+  background: #1a1a2e;
+  padding: 20px;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.game-header h1 {
+  color: white;
+  font-size: 2.5em;
+  margin: 0;
+}
+
+.message-log {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+
+.log-message {
+  padding: 6px;
+  border-left: 3px solid #667eea;
+  padding-left: 12px;
+  margin: 4px 0;
+  background: white;
+  border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .game-header h1 {
+    font-size: 2em;
+  }
+}

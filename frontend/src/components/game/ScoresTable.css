@@ -1,0 +1,22 @@
+﻿.scores-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.scores-table th,
+.scores-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.scores-table th {
+  background: #e74c3c;
+  color: white;
+  font-weight: 600;
+}
+
+.scores-table tr:hover {
+  background: #f8f9fa;
+}
