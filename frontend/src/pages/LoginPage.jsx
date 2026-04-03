@@ -88,7 +88,9 @@ function LoginPage() {
       <div className="login-card">
         <div className="login-header">
           <h1>🎵 MusiChaos</h1>
-          <p>Music Quiz Game</p>
+          <p>
+            <i>Music Quiz Game</i>
+          </p>
         </div>
 
         {message && (
@@ -113,26 +115,24 @@ function LoginPage() {
         {activeTab === "login" ? (
           <form onSubmit={handleLogin} className="auth-form">
             <div className="form-group">
-              <label>Email</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="tu@email.com"
+                placeholder="email@example.com"
                 required
                 disabled={loading}
               />
             </div>
 
             <div className="form-group">
-              <label>Password</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Tu contraseña"
+                placeholder="Password"
                 required
                 disabled={loading}
               />
@@ -145,39 +145,36 @@ function LoginPage() {
         ) : (
           <form onSubmit={handleRegister} className="auth-form">
             <div className="form-group">
-              <label>Email</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="tu@email.com"
+                placeholder="email@example.com"
                 required
                 disabled={loading}
               />
             </div>
 
             <div className="form-group">
-              <label>Username</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="Tu nombre de usuario"
+                placeholder="Username"
                 required
                 disabled={loading}
               />
             </div>
 
             <div className="form-group">
-              <label>Password</label>
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Mínimo 8 caracteres"
+                placeholder="Password"
                 minLength={8}
                 required
                 disabled={loading}
