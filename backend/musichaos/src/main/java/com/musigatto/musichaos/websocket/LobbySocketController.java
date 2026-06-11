@@ -15,9 +15,9 @@ public class LobbySocketController {
 
     @MessageMapping("/lobby/join")
     @SendTo("/topic/lobby")
-    public Lobby joinLobby(LobbyMessage msg) {
+    public Lobby joinLobby(JoinLobbyRequest msg) {
         return lobbyService.joinLobby(msg.code(), msg.email());
     }
 
-    record LobbyMessage(String code, String email) {}
+    record JoinLobbyRequest(String code, String email) {}
 }

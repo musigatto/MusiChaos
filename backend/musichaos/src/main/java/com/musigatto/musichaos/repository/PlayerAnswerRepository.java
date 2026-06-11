@@ -7,7 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PlayerAnswerRepository extends JpaRepository<PlayerAnswer, Long> {
-    List<PlayerAnswer> findByRoundId(Long roundId);
     Optional<PlayerAnswer> findByRoundIdAndUsername(Long roundId, String username);
-
 }

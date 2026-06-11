@@ -32,7 +32,7 @@ public class RoundService {
         Round round = Round.builder()
                 .roundNumber(roundNumber)
                 .correctAnswer(correctAnswer)
-                .status(RoundStatus.WAITING)
+                .status(RoundStatus.ACTIVE)
                 .lobby(lobby)
                 .build();
 
