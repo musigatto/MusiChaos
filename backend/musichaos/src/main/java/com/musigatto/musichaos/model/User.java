@@ -27,9 +27,4 @@ public class User {
     // Password hasheado (NUNCA guardar texto plano)
     @Column(nullable = false)
     private String password;
-
-    // Info extra para perfil (opcional)
-    private String avatarUrl;       // URL del avatar
-    private Integer coins = 0;      // Moneda del juego
-    private Integer level = 1;      // Nivel
 }

@@ -1,5 +1,7 @@
 package com.musigatto.musichaos.service;
 
+import com.musigatto.musichaos.game.LobbyMessage;
+import com.musigatto.musichaos.game.LobbyNotificationService;
 import com.musigatto.musichaos.model.Lobby;
 import com.musigatto.musichaos.model.User;
 import com.musigatto.musichaos.repository.LobbyRepository;
@@ -15,6 +17,7 @@ public class LobbyService {
 
     private final LobbyRepository lobbyRepository;
     private final UserRepository userRepository;
+    private final LobbyNotificationService notificationService;
 
     // Crear un lobby nuevo
     public Lobby createLobby(String name) {
@@ -27,6 +30,11 @@ public class LobbyService {
         return lobbyRepository.save(lobby);
     }
 
+    public Lobby getLobby(Long id) {
+        return lobbyRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Lobby not found"));
+    }
+
     // Agregar jugador al lobby
     public Lobby joinLobby(String code, String emailOrUsername) {
         Lobby lobby = lobbyRepository.findByCode(code)
@@ -34,7 +42,9 @@ public class LobbyService {
         User user = userRepository.findByEmail(emailOrUsername)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         lobby.getPlayers().add(user);
-        return lobbyRepository.save(lobby);
+        Lobby saved = lobbyRepository.save(lobby);
+        notificationService.sendLobbyUpdate(saved.getId(), new LobbyMessage("LOBBY_UPDATE", null, null));
+        return saved;
     }
 
 

@@ -32,18 +32,47 @@ public class RoundService {
         Round round = Round.builder()
                 .roundNumber(roundNumber)
                 .correctAnswer(correctAnswer)
-                .status(RoundStatus.ACTIVE)
+                .status(RoundStatus.WAITING)
                 .lobby(lobby)
                 .build();
 
         Round saved = roundRepository.save(round);
 
+        // ponytail: content encodes "roundId|roundNumber" so frontend can fetch round data via REST
         LobbyMessage message = new LobbyMessage(
                 "NEW_ROUND",
                 null,
-                "Ronda " + roundNumber + " creada"
+                saved.getId() + "|" + roundNumber
         );
         notificationService.sendLobbyUpdate(lobbyId, message);
+
+        return saved;
+    }
+
+    public Round getRound(Long roundId) {
+        return roundRepository.findById(roundId)
+                .orElseThrow(() -> new RuntimeException("Round not found"));
+    }
+
+    @Transactional
+    public Round startRound(Long roundId) {
+        Round round = roundRepository.findById(roundId)
+                .orElseThrow(() -> new RuntimeException("Round not found"));
+
+        if (round.getStatus() != RoundStatus.WAITING) {
+            throw new RuntimeException("Round is not in WAITING status");
+        }
+
+        round.setStatus(RoundStatus.ACTIVE);
+        Round saved = roundRepository.save(round);
+
+        // ponytail: same encoding as NEW_ROUND — roundId|roundNumber
+        LobbyMessage message = new LobbyMessage(
+                "ROUND_STARTED",
+                null,
+                saved.getId() + "|" + saved.getRoundNumber()
+        );
+        notificationService.sendLobbyUpdate(round.getLobby().getId(), message);
 
         return saved;
     }
@@ -52,6 +81,10 @@ public class RoundService {
     public Round submitAnswer(Long roundId, String username, String answer) {
         Round round = roundRepository.findById(roundId)
                 .orElseThrow(() -> new RuntimeException("Round not found"));
+
+        if (round.getStatus() != RoundStatus.ACTIVE) {
+            throw new RuntimeException("Round is not active");
+        }
 
         // Verificar si ya se respondió
         boolean alreadyAnswered = answerRepository.findByRoundIdAndUsername(roundId, username).isPresent();

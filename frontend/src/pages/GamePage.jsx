@@ -18,7 +18,7 @@ import "./GamePage.css";
 function GamePage() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const { currentLobby, isHost, scores } = useGame();
+  const { currentLobby, isHost } = useGame();
   const { connected, messages } = useWebSocket();
 
   const handleLogout = () => {
@@ -54,7 +54,7 @@ function GamePage() {
         {currentLobby && <AnswerList />}
 
         {/* Tabla de Puntajes */}
-        {currentLobby && scores.length > 0 && <ScoresTable />}
+        {currentLobby && <ScoresTable />}
 
         {/* Log de Mensajes WebSocket */}
         <div className="card">

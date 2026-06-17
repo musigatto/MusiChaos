@@ -22,6 +22,16 @@ public class RoundController {
         return ResponseEntity.ok(roundService.createRound(lobbyId, roundNumber, correctAnswer));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Round> getRound(@PathVariable Long id) {
+        return ResponseEntity.ok(roundService.getRound(id));
+    }
+
+    @PostMapping("/{id}/start")
+    public ResponseEntity<Round> startRound(@PathVariable Long id) {
+        return ResponseEntity.ok(roundService.startRound(id));
+    }
+
     @PostMapping("/{id}/answer")
     public ResponseEntity<Round> submitAnswer(@PathVariable Long id,
                                               @RequestParam String username,

@@ -1,9 +1,9 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState } from "react";
 import { useGame } from "../../context/GameContext";
 import "./HostPanel.css";
 
 function HostPanel() {
-  const { createRound, finishRound, currentRound } = useGame();
+  const { createRound, startRound, finishRound, currentRound } = useGame();
   const [roundNumber, setRoundNumber] = useState(1);
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [message, setMessage] = useState("");
@@ -20,9 +20,19 @@ function HostPanel() {
     const result = await createRound(roundNumber, correctAnswer);
 
     if (result.success) {
-      setMessage(`✅ Ronda ${roundNumber} creada`);
+      setMessage(`✅ Ronda ${roundNumber} creada (esperando inicio)`);
       setRoundNumber((prev) => prev + 1);
       setCorrectAnswer("");
+    } else {
+      setMessage(`❌ Error: ${result.error}`);
+    }
+  };
+
+  const handleStartRound = async () => {
+    const result = await startRound();
+
+    if (result.success) {
+      setMessage("✅ Ronda iniciada, jugadores pueden responder");
     } else {
       setMessage(`❌ Error: ${result.error}`);
     }
@@ -36,6 +46,11 @@ function HostPanel() {
     } else {
       setMessage(`❌ Error: ${result.error}`);
     }
+  };
+
+  const roundStatusLabel = (status) => {
+    const labels = { WAITING: "⏳ Esperando inicio", ACTIVE: "▶️ Activa", FINISHED: "✅ Finalizada" };
+    return labels[status] || status;
   };
 
   return (
@@ -67,7 +82,9 @@ function HostPanel() {
               />
             </div>
 
-            <button type="submit">🎯 Crear Ronda</button>
+            <button type="submit" disabled={currentRound?.status === "ACTIVE" || currentRound?.status === "WAITING"}>
+              🎯 Crear Ronda
+            </button>
           </form>
 
           <hr
@@ -81,9 +98,7 @@ function HostPanel() {
                 <p>
                   <strong>Ronda #{currentRound.roundNumber}</strong>
                 </p>
-                <p>ID: {currentRound.id}</p>
-                <p>Respuesta: {currentRound.correctAnswer}</p>
-                <p>Estado: {currentRound.status}</p>
+                <p>Estado: {roundStatusLabel(currentRound.status)}</p>
               </>
             ) : (
               <p style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -92,9 +107,17 @@ function HostPanel() {
             )}
           </div>
 
-          <button onClick={handleFinishRound} disabled={!currentRound}>
-            ✅ Finalizar Ronda
-          </button>
+          {currentRound?.status === "WAITING" && (
+            <button onClick={handleStartRound} style={{ background: "#28a745" }}>
+              ▶️ Iniciar Ronda
+            </button>
+          )}
+
+          {currentRound?.status === "ACTIVE" && (
+            <button onClick={handleFinishRound}>
+              ✅ Finalizar Ronda
+            </button>
+          )}
 
           {message && (
             <div

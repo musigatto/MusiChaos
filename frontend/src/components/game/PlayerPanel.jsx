@@ -47,6 +47,22 @@ function PlayerPanel() {
     );
   }
 
+  if (currentRound.status === "WAITING") {
+    return (
+      <div className="card">
+        <div className="game-panel">
+          <h2>🎵 Ronda Creada</h2>
+          <div className="round-info">
+            <h3>Ronda #{currentRound.roundNumber}</h3>
+            <p style={{ color: "rgba(255,255,255,0.8)" }}>
+              ⏳ Esperando a que el host inicie la ronda...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="card">
       <div className="game-panel">

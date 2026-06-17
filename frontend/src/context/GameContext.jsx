@@ -84,6 +84,20 @@ export function GameProvider({ children }) {
   };
 
   /**
+   * Cargar lobby por ID
+   */
+  const loadLobby = async (lobbyId) => {
+    try {
+      const response = await api.get(ENDPOINTS.LOBBY.GET(lobbyId));
+      setCurrentLobby(response.data);
+      checkIfHost(response.data);
+      return { success: true, lobby: response.data };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  };
+
+  /**
    * Cargar puntajes
    */
   const loadScores = async () => {
@@ -125,6 +139,22 @@ export function GameProvider({ children }) {
       return { success: false, error: err.message };
     } finally {
       setLoading(false);
+    }
+  };
+
+  /**
+   * Iniciar ronda (HOST) - WAITING → ACTIVE
+   */
+  const startRound = async () => {
+    if (!currentRound) return { success: false, error: "No round" };
+
+    try {
+      const response = await api.post(ENDPOINTS.ROUNDS.START(currentRound.id));
+      setCurrentRound(response.data);
+      return { success: true };
+    } catch (err) {
+      setError(err.response?.data || err.message);
+      return { success: false, error: err.message };
     }
   };
 
@@ -187,9 +217,8 @@ export function GameProvider({ children }) {
     }
   };
 
-  /**
-   * Verificar si el usuario es el host
-   */
+  // ponytail: assumes first player in array is the host. Ceiling: if player order shifts, host reassigns wrong.
+  // Upgrade: store explicit `hostId` on Lobby entity.
   const checkIfHost = (lobby) => {
     const userEmail = localStorage.getItem("user_email");
     if (lobby?.players?.length > 0) {
@@ -207,12 +236,16 @@ export function GameProvider({ children }) {
   }, []);
 
   /**
-   * Resetear estado de ronda
+   * Cargar ronda por ID
    */
-  const resetRound = () => {
-    setCurrentRound(null);
-    setHasAnswered(false);
-    setAnswers([]);
+  const loadRound = async (roundId) => {
+    try {
+      const response = await api.get(ENDPOINTS.ROUNDS.GET(roundId));
+      setCurrentRound(response.data);
+      return { success: true, round: response.data };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
   };
 
   const value = {
@@ -231,11 +264,13 @@ export function GameProvider({ children }) {
     joinLobby,
     leaveLobby,
     updateLobby,
+    loadLobby,
 
     // Round actions
     createRound,
+    startRound,
     finishRound,
-    resetRound,
+    loadRound,
 
     // Answer actions
     submitAnswer,

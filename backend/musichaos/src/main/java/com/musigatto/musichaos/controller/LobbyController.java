@@ -18,6 +18,12 @@ public class LobbyController {
 
     private final LobbyService lobbyService;
     private final ScoreService scoreService;
+
+    @GetMapping("/{lobbyId}")
+    public Lobby get(@PathVariable Long lobbyId) {
+        return lobbyService.getLobby(lobbyId);
+    }
+
     @PostMapping("/create")
     public Lobby create(Authentication auth) {
         return lobbyService.createLobby(auth.getName());

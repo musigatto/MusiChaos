@@ -1,6 +1,5 @@
 package com.musigatto.musichaos.service;
 
-import com.musigatto.musichaos.dto.UserProfile;
 import com.musigatto.musichaos.model.User;
 import com.musigatto.musichaos.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,19 +42,6 @@ public class UserService {
         }
 
         return user;
-    }
-
-    public UserProfile getProfile(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        return UserProfile.builder()
-                .email(user.getEmail())
-                .username(user.getUsername())
-                .avatarUrl(user.getAvatarUrl())
-                .coins(user.getCoins())
-                .level(user.getLevel())
-                .build();
     }
 
 }

@@ -5,7 +5,7 @@ import { useGame } from "../context/GameContext";
 export function useWebSocket() {
   const [connected, setConnected] = useState(false);
   const [messages, setMessages] = useState([]);
-  const { updateLobby, currentLobby, loadAnswers, loadScores, resetRound } =
+  const { updateLobby, currentLobby, loadAnswers, loadScores, loadRound, loadLobby } =
     useGame();
   const subscriptionsRef = useRef([]);
 
@@ -62,14 +62,39 @@ export function useWebSocket() {
   const handleLobbyMessage = (data) => {
     switch (data.type) {
       case "NEW_ROUND":
-        addMessage("🎯 Nueva ronda iniciada");
-        resetRound();
+        // ponytail: content = "roundId|roundNumber"
+        {
+          const [rid] = data.content.split("|");
+          addMessage(`🎯 Nueva ronda #${data.content.split("|")[1]} creada`);
+          loadRound(parseInt(rid, 10));
+        }
         break;
 
       case "ANSWER":
         addMessage(`💬 ${data.username} ha respondido`);
         if (currentLobby) {
           loadAnswers();
+        }
+        break;
+
+      case "SCORE_UPDATE":
+        addMessage(`⭐ ${data.username} suma ${data.content} puntos`);
+        loadScores();
+        break;
+
+      case "LOBBY_UPDATE":
+        addMessage("👥 Jugador actualizado en el lobby");
+        if (currentLobby) {
+          loadLobby(currentLobby.id);
+        }
+        break;
+
+      case "ROUND_STARTED":
+        // ponytail: same encoding as NEW_ROUND — roundId|roundNumber
+        {
+          const [rid, rnum] = data.content.split("|");
+          addMessage(`▶️ Ronda #${rnum} iniciada`);
+          loadRound(parseInt(rid, 10));
         }
         break;
 

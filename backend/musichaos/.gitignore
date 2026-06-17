@@ -3,6 +3,7 @@ application-*.properties
 *.env
 .env.*
 
+AGENTS.md
 HELP.md
 .gradle
 build/
